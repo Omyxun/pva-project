@@ -57,11 +57,21 @@ public class Klub
 
     public void PrihlasDoTurnaje(string prezdivka)
     {
-        throw new NotImplementedException();
+        if (AktualniTurnaj == null)
+        {
+            throw new TurnajException("Žádný turnaj není otevřený.");
+        }
+        Hrac hrac = Hraci.Najdi(prezdivka);
+        AktualniTurnaj.Prihlas(hrac);
     }
 
     public void OdhlasZTurnaje(string prezdivka)
     {
-        throw new NotImplementedException();
+        if (AktualniTurnaj == null)
+        {
+            throw new TurnajException("Žádný turnaj není otevřený.");
+        }
+        Hrac hrac = Hraci.Najdi(prezdivka);
+        AktualniTurnaj.Odhlas(hrac.Prezdivka);
     }
 }
