@@ -26,7 +26,25 @@ public class Klub
     // kdyz je prihlaseny v nezacatem turnaji, nejdriv se odhlasi
     public void OdeberHrace(string prezdivka)
     {
-        throw new NotImplementedException();
+        Hrac hrac = Hraci.Najdi(prezdivka);
+
+        if (AktualniTurnaj != null)
+        {
+            if (AktualniTurnaj.HracMaZapas(hrac.Prezdivka))
+            {
+                throw new TurnajException("Hráč " + hrac.Prezdivka + " už hrál zápas, smazat ho nejde.");
+            }
+            if (AktualniTurnaj.JePrihlasen(hrac.Prezdivka))
+            {
+                if (AktualniTurnaj.Zacal())
+                {
+                    throw new TurnajException("Hráč " + hrac.Prezdivka + " je přihlášený v rozehraném turnaji, smazat ho nejde.");
+                }
+                // turnaj jeste nezacal, hrace nejdriv odhlasime
+                AktualniTurnaj.Odhlas(hrac.Prezdivka);
+            }
+        }
+        Hraci.Odeber(hrac.Prezdivka);
     }
 
     public void PrihlasDoTurnaje(string prezdivka)
