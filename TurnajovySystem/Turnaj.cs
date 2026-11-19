@@ -4,7 +4,9 @@ public class Turnaj
     public string Disciplina { get; private set; }
     public int PocetKol { get; private set; }
     public List<Hrac> Prihlaseni { get; private set; }
-    public List<Kolo> Kola { get; private set; }
+    public IReadOnlyList<Kolo> Kola { get; private set; }
+
+    private readonly List<Kolo> kola;
 
     public Turnaj(string nazev, string disciplina, int pocetKol)
     {
@@ -18,7 +20,8 @@ public class Turnaj
         Disciplina = disciplina;
         PocetKol = pocetKol;
         Prihlaseni = new List<Hrac>();
-        Kola = new List<Kolo>();
+        kola = new List<Kolo>();
+        Kola = kola.AsReadOnly();
     }
 
     // jen dokud nezacalo prvni kolo
@@ -42,51 +45,134 @@ public class Turnaj
         throw new NotImplementedException();
     }
 
-    // posledni kolo, nebo null
     public Kolo AktualniKolo()
     {
-        throw new NotImplementedException();
+        if (kola.Count == 0)
+        {
+            return null;
+        }
+
+        return kola[kola.Count - 1];
     }
 
-    // predchozi kolo musi byt uzavrene a nesmi se prekrocit PocetKol
-    // prihlaseni musi byt aspon 2 hraci
     public Kolo NoveKolo()
     {
-        throw new NotImplementedException();
+        Kolo predchozi = AktualniKolo();
+        if (predchozi != null && predchozi.Stav != Kolo.UZAVRENE)
+        {
+            throw new TurnajException("Nejdřív uzavřete předchozí kolo.");
+        }
+        if (kola.Count >= PocetKol)
+        {
+            throw new TurnajException("Všechna kola už byla odehrána.");
+        }
+        if (Prihlaseni.Count < 2)
+        {
+            throw new TurnajException("Pro nové kolo musí být přihlášení aspoň dva hráči.");
+        }
+
+        Kolo kolo = new Kolo(kola.Count + 1);
+        kola.Add(kolo);
+        return kolo;
     }
 
-    // oba hraci musi byt prihlaseni
     public void PridejDvojici(string prezdivka1, string prezdivka2)
     {
-        throw new NotImplementedException();
+        Kolo kolo = VyberAktualniKolo();
+        if (string.IsNullOrWhiteSpace(prezdivka1) || string.IsNullOrWhiteSpace(prezdivka2))
+        {
+            throw new TurnajException("Zadejte přezdívky obou hráčů.");
+        }
+
+        prezdivka1 = prezdivka1.Trim();
+        prezdivka2 = prezdivka2.Trim();
+        Hrac prvni = null;
+        Hrac druhy = null;
+        foreach (Hrac hrac in Prihlaseni)
+        {
+            string prezdivka = hrac.Prezdivka.Trim();
+            if (string.Equals(prezdivka, prezdivka1, StringComparison.OrdinalIgnoreCase))
+            {
+                prvni = hrac;
+            }
+            if (string.Equals(prezdivka, prezdivka2, StringComparison.OrdinalIgnoreCase))
+            {
+                druhy = hrac;
+            }
+        }
+
+        if (prvni == null || druhy == null)
+        {
+            throw new TurnajException("Oba hráči musí být přihlášení do turnaje.");
+        }
+
+        kolo.PridejZapas(prvni, druhy);
     }
 
-    // kdo zbyl bez soupere, dostane volny los
-    // kdyz zbyl vic nez jeden hrac, je to chyba
     public void DokonciLosovani()
     {
-        throw new NotImplementedException();
+        Kolo kolo = VyberAktualniKolo();
+        if (kolo.Stav != Kolo.LOSUJE_SE)
+        {
+            throw new TurnajException("Losování už skončilo.");
+        }
+
+        Hrac volnyLos = null;
+        foreach (Hrac hrac in Prihlaseni)
+        {
+            if (!kolo.ObsahujeHrace(hrac.Prezdivka))
+            {
+                if (volnyLos != null)
+                {
+                    throw new TurnajException("Bez soupeře zbývá víc než jeden hráč.");
+                }
+                volnyLos = hrac;
+            }
+        }
+
+        if (volnyLos != null)
+        {
+            kolo.NastavVolnyLos(volnyLos);
+        }
+        kolo.UkonciLosovani();
     }
 
     public void ZadejVysledek(int cisloZapasu, int vysledek)
     {
-        throw new NotImplementedException();
+        VyberAktualniKolo().ZadejVysledek(cisloZapasu, vysledek);
     }
 
     public void UzavriKolo()
     {
-        throw new NotImplementedException();
+        VyberAktualniKolo().Uzavri();
     }
 
-    // vsechna kola odehrana a posledni uzavrene
     public bool JeDokonceny()
     {
-        throw new NotImplementedException();
+        return kola.Count == PocetKol && AktualniKolo().Stav == Kolo.UZAVRENE;
     }
 
-    // hrac ma v nekterem kole zapas nebo volny los
     public bool HracMaZapas(string prezdivka)
     {
-        throw new NotImplementedException();
+        foreach (Kolo kolo in kola)
+        {
+            if (kolo.ObsahujeHrace(prezdivka))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private Kolo VyberAktualniKolo()
+    {
+        Kolo kolo = AktualniKolo();
+        if (kolo == null)
+        {
+            throw new TurnajException("Nejdřív vytvořte kolo.");
+        }
+
+        return kolo;
     }
 }
