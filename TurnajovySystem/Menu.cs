@@ -22,12 +22,19 @@ public class Menu
             if (klub.AktualniTurnaj != null)
             {
                 Console.WriteLine("Turnaj: " + klub.AktualniTurnaj.Nazev + " (" + klub.AktualniTurnaj.Disciplina + ")");
+                Kolo aktKolo = klub.AktualniTurnaj.AktualniKolo();
+                if (aktKolo != null)
+                {
+                    Console.WriteLine("Aktuální kolo: " + aktKolo.Cislo + " (" + TextStavuKola(aktKolo.Stav) + ")");
+                }
             }
             else
             {
                 Console.WriteLine("Turnaj není založený.");
             }
 
+            Console.WriteLine();
+            Console.WriteLine("Hráči a turnaj:");
             Console.WriteLine("1 - Přidat hráče");
             Console.WriteLine("2 - Odebrat hráče");
             Console.WriteLine("3 - Vypsat hráče");
@@ -35,9 +42,18 @@ public class Menu
             Console.WriteLine("5 - Zrušit turnaj");
             Console.WriteLine("6 - Přihlásit hráče do turnaje");
             Console.WriteLine("7 - Odhlásit hráče z turnaje");
+            Console.WriteLine();
+            Console.WriteLine("Kola a výsledky:");
+            Console.WriteLine("8 - Vytvořit nové kolo");
+            Console.WriteLine("9 - Zadat dvojici");
+            Console.WriteLine("10 - Dokončit losování");
+            Console.WriteLine("11 - Zadat výsledek zápasu");
+            Console.WriteLine("12 - Uzavřít kolo");
+            Console.WriteLine("13 - Vypsat kolo");
+            Console.WriteLine();
             Console.WriteLine("0 - Konec");
 
-            int volba = Vstup.NactiCislo("Zadejte volbu (0-7): ", 0, 7);
+            int volba = Vstup.NactiCislo("Zadejte volbu (0-13): ", 0, 13);
             Console.WriteLine();
 
             try
@@ -64,6 +80,24 @@ public class Menu
                         break;
                     case 7:
                         OdhlasitHrace();
+                        break;
+                    case 8:
+                        NoveKolo();
+                        break;
+                    case 9:
+                        ZadatDvojici();
+                        break;
+                    case 10:
+                        DokoncitLosovani();
+                        break;
+                    case 11:
+                        ZadatVysledek();
+                        break;
+                    case 12:
+                        UzavritKolo();
+                        break;
+                    case 13:
+                        VypsatKolo();
                         break;
                     case 0:
                         bezi = false;
@@ -169,5 +203,184 @@ public class Menu
         string prezdivka = Vstup.NactiText("Zadejte přezdívku hráče k odhlášení: ");
         klub.OdhlasZTurnaje(prezdivka);
         Console.WriteLine("Hráč byl odhlášen z turnaje.");
+    }
+
+    private void NoveKolo()
+    {
+        if (klub.AktualniTurnaj == null)
+        {
+            Console.WriteLine("Turnaj není založený.");
+            return;
+        }
+
+        Kolo kolo = klub.AktualniTurnaj.NoveKolo();
+        Console.WriteLine("Kolo " + kolo.Cislo + " bylo úspěšně vytvořeno.");
+    }
+
+    private void ZadatDvojici()
+    {
+        if (klub.AktualniTurnaj == null)
+        {
+            Console.WriteLine("Turnaj není založený.");
+            return;
+        }
+
+        Kolo kolo = klub.AktualniTurnaj.AktualniKolo();
+        if (kolo == null)
+        {
+            Console.WriteLine("Není vytvořeno žádné kolo.");
+            return;
+        }
+
+        string p1 = Vstup.NactiText("Zadejte přezdívku prvního hráče: ");
+        string p2 = Vstup.NactiText("Zadejte přezdívku druhého hráče: ");
+        klub.AktualniTurnaj.PridejDvojici(p1, p2);
+        Console.WriteLine("Dvojice byla přidána.");
+    }
+
+    private void DokoncitLosovani()
+    {
+        if (klub.AktualniTurnaj == null)
+        {
+            Console.WriteLine("Turnaj není založený.");
+            return;
+        }
+
+        Kolo kolo = klub.AktualniTurnaj.AktualniKolo();
+        if (kolo == null)
+        {
+            Console.WriteLine("Není vytvořeno žádné kolo.");
+            return;
+        }
+
+        klub.AktualniTurnaj.DokonciLosovani();
+        Console.WriteLine("Losování kola " + kolo.Cislo + " bylo dokončeno.");
+        if (kolo.VolnyLos != null)
+        {
+            Console.WriteLine("Hráč " + kolo.VolnyLos.Prezdivka + " získal volný los.");
+        }
+    }
+
+    private void ZadatVysledek()
+    {
+        if (klub.AktualniTurnaj == null)
+        {
+            Console.WriteLine("Turnaj není založený.");
+            return;
+        }
+
+        Kolo kolo = klub.AktualniTurnaj.AktualniKolo();
+        if (kolo == null)
+        {
+            Console.WriteLine("Není vytvořeno žádné kolo.");
+            return;
+        }
+
+        if (kolo.Zapasy.Count == 0)
+        {
+            Console.WriteLine("V kole nejsou žádné zápasy.");
+            return;
+        }
+
+        Console.WriteLine("Zápasy v kole:");
+        for (int i = 0; i < kolo.Zapasy.Count; i++)
+        {
+            Zapas z = kolo.Zapasy[i];
+            Console.WriteLine(z.Cislo + ". " + z.Prvni.Prezdivka + " vs " + z.Druhy.Prezdivka + " (" + TextVysledku(z) + ")");
+        }
+
+        int cisloZapasu = Vstup.NactiCislo("Číslo zápasu: ", 1, kolo.Zapasy.Count);
+        Console.WriteLine("Výsledek:");
+        Console.WriteLine("1 - Výhra prvního (" + kolo.Zapasy[cisloZapasu - 1].Prvni.Prezdivka + ")");
+        Console.WriteLine("2 - Výhra druhého (" + kolo.Zapasy[cisloZapasu - 1].Druhy.Prezdivka + ")");
+        Console.WriteLine("3 - Remíza");
+        int vysledek = Vstup.NactiCislo("Zadejte volbu výsledku (1-3): ", 1, 3);
+
+        klub.AktualniTurnaj.ZadejVysledek(cisloZapasu, vysledek);
+        Console.WriteLine("Výsledek byl zaznamenán.");
+    }
+
+    private void UzavritKolo()
+    {
+        if (klub.AktualniTurnaj == null)
+        {
+            Console.WriteLine("Turnaj není založený.");
+            return;
+        }
+
+        Kolo kolo = klub.AktualniTurnaj.AktualniKolo();
+        if (kolo == null)
+        {
+            Console.WriteLine("Není vytvořeno žádné kolo.");
+            return;
+        }
+
+        klub.AktualniTurnaj.UzavriKolo();
+        Console.WriteLine("Kolo " + kolo.Cislo + " bylo uzavřeno.");
+    }
+
+    private void VypsatKolo()
+    {
+        if (klub.AktualniTurnaj == null)
+        {
+            Console.WriteLine("Turnaj není založený.");
+            return;
+        }
+
+        Kolo kolo = klub.AktualniTurnaj.AktualniKolo();
+        if (kolo == null)
+        {
+            Console.WriteLine("Zatím nebylo vytvořeno žádné kolo.");
+            return;
+        }
+
+        Console.WriteLine("Kolo " + kolo.Cislo + " (" + TextStavuKola(kolo.Stav) + "):");
+        if (kolo.Zapasy.Count == 0)
+        {
+            Console.WriteLine("Zatím nejsou vytvořeny žádné zápasy.");
+        }
+        else
+        {
+            for (int i = 0; i < kolo.Zapasy.Count; i++)
+            {
+                Zapas z = kolo.Zapasy[i];
+                Console.WriteLine("- Zápas " + z.Cislo + ": " + z.Prvni.Prezdivka + " vs " + z.Druhy.Prezdivka + " [" + TextVysledku(z) + "]");
+            }
+        }
+
+        if (kolo.VolnyLos != null)
+        {
+            Console.WriteLine("Volný los: " + kolo.VolnyLos.Prezdivka + " (" + kolo.VolnyLos.Jmeno + ")");
+        }
+    }
+
+    private string TextStavuKola(int stav)
+    {
+        switch (stav)
+        {
+            case Kolo.LOSUJE_SE:
+                return "losuje se";
+            case Kolo.HRAJE_SE:
+                return "hraje se";
+            case Kolo.UZAVRENE:
+                return "uzavřené";
+            default:
+                return "neznámý";
+        }
+    }
+
+    private string TextVysledku(Zapas z)
+    {
+        switch (z.Vysledek)
+        {
+            case Zapas.VYHRA_PRVNIHO:
+                return "1:0 (výhra " + z.Prvni.Prezdivka + ")";
+            case Zapas.VYHRA_DRUHEHO:
+                return "0:1 (výhra " + z.Druhy.Prezdivka + ")";
+            case Zapas.REMIZA:
+                return "remíza";
+            default:
+                return "neodehráno";
+        }
     }
 }
