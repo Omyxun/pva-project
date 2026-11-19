@@ -14,12 +14,20 @@ public class Klub
     // otevreny muze byt jen jeden turnaj, novy jde zalozit az kdyz je stary dokonceny nebo zruseny
     public void ZalozTurnaj(string nazev, string disciplina, int pocetKol)
     {
-        throw new NotImplementedException();
+        if (AktualniTurnaj != null && !AktualniTurnaj.JeDokonceny())
+        {
+            throw new TurnajException("Už je otevřený turnaj, nový jde založit až po jeho dokončení nebo zrušení.");
+        }
+        AktualniTurnaj = new Turnaj(nazev, disciplina, pocetKol);
     }
 
     public void ZrusTurnaj()
     {
-        throw new NotImplementedException();
+        if (AktualniTurnaj == null)
+        {
+            throw new TurnajException("Žádný turnaj není otevřený.");
+        }
+        AktualniTurnaj = null;
     }
 
     // hrace, ktery uz hral nebo je prihlaseny v rozehranem turnaji, smazat nejde
@@ -49,11 +57,21 @@ public class Klub
 
     public void PrihlasDoTurnaje(string prezdivka)
     {
-        throw new NotImplementedException();
+        if (AktualniTurnaj == null)
+        {
+            throw new TurnajException("Žádný turnaj není otevřený.");
+        }
+        Hrac hrac = Hraci.Najdi(prezdivka);
+        AktualniTurnaj.Prihlas(hrac);
     }
 
     public void OdhlasZTurnaje(string prezdivka)
     {
-        throw new NotImplementedException();
+        if (AktualniTurnaj == null)
+        {
+            throw new TurnajException("Žádný turnaj není otevřený.");
+        }
+        Hrac hrac = Hraci.Najdi(prezdivka);
+        AktualniTurnaj.Odhlas(hrac.Prezdivka);
     }
 }
