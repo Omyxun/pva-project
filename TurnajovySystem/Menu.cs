@@ -44,16 +44,15 @@ public class Menu
             Console.WriteLine("7 - Odhlásit hráče z turnaje");
             Console.WriteLine();
             Console.WriteLine("Kola a výsledky:");
-            Console.WriteLine("8 - Vytvořit nové kolo");
-            Console.WriteLine("9 - Zadat dvojici");
-            Console.WriteLine("10 - Dokončit losování");
-            Console.WriteLine("11 - Zadat výsledek zápasu");
-            Console.WriteLine("12 - Uzavřít kolo");
-            Console.WriteLine("13 - Vypsat kolo");
+            Console.WriteLine("8 - Nové kolo");
+            Console.WriteLine("9 - Losování");
+            Console.WriteLine("10 - Zadání výsledku");
+            Console.WriteLine("11 - Uzavření kola");
+            Console.WriteLine("12 - Výpis kola");
             Console.WriteLine();
             Console.WriteLine("0 - Konec");
 
-            int volba = Vstup.NactiCislo("Zadejte volbu (0-13): ", 0, 13);
+            int volba = Vstup.NactiCislo("Zadejte volbu (0-12): ", 0, 12);
             Console.WriteLine();
 
             try
@@ -85,18 +84,15 @@ public class Menu
                         NoveKolo();
                         break;
                     case 9:
-                        ZadatDvojici();
+                        Losovani();
                         break;
                     case 10:
-                        DokoncitLosovani();
-                        break;
-                    case 11:
                         ZadatVysledek();
                         break;
-                    case 12:
+                    case 11:
                         UzavritKolo();
                         break;
-                    case 13:
+                    case 12:
                         VypsatKolo();
                         break;
                     case 0:
@@ -217,7 +213,7 @@ public class Menu
         Console.WriteLine("Kolo " + kolo.Cislo + " bylo úspěšně vytvořeno.");
     }
 
-    private void ZadatDvojici()
+    private void Losovani()
     {
         if (klub.AktualniTurnaj == null)
         {
@@ -232,32 +228,57 @@ public class Menu
             return;
         }
 
-        string p1 = Vstup.NactiText("Zadejte přezdívku prvního hráče: ");
-        string p2 = Vstup.NactiText("Zadejte přezdívku druhého hráče: ");
-        klub.AktualniTurnaj.PridejDvojici(p1, p2);
-        Console.WriteLine("Dvojice byla přidána.");
-    }
-
-    private void DokoncitLosovani()
-    {
-        if (klub.AktualniTurnaj == null)
+        if (kolo.Stav != Kolo.LOSUJE_SE)
         {
-            Console.WriteLine("Turnaj není založený.");
+            Console.WriteLine("Losování tohoto kola už bylo dokončeno.");
             return;
         }
 
-        Kolo kolo = klub.AktualniTurnaj.AktualniKolo();
-        if (kolo == null)
+        while (true)
         {
-            Console.WriteLine("Není vytvořeno žádné kolo.");
-            return;
-        }
+            List<Hrac> nesparovani = new List<Hrac>();
+            foreach (Hrac hrac in klub.AktualniTurnaj.Prihlaseni)
+            {
+                if (!kolo.ObsahujeHrace(hrac.Prezdivka))
+                {
+                    nesparovani.Add(hrac);
+                }
+            }
 
-        klub.AktualniTurnaj.DokonciLosovani();
-        Console.WriteLine("Losování kola " + kolo.Cislo + " bylo dokončeno.");
-        if (kolo.VolnyLos != null)
-        {
-            Console.WriteLine("Hráč " + kolo.VolnyLos.Prezdivka + " získal volný los.");
+            if (nesparovani.Count <= 1)
+            {
+                klub.AktualniTurnaj.DokonciLosovani();
+                Console.WriteLine("Losování bylo dokončeno.");
+                if (kolo.VolnyLos != null)
+                {
+                    Console.WriteLine("Volný los: " + kolo.VolnyLos.Prezdivka);
+                }
+                else
+                {
+                    Console.WriteLine("Volný los: nikdo");
+                }
+                break;
+            }
+
+            Console.WriteLine("Hráči, kteří ještě nemají soupeře:");
+            foreach (Hrac h in nesparovani)
+            {
+                Console.WriteLine("- " + h.Prezdivka);
+            }
+
+            try
+            {
+                string p1 = Vstup.NactiText("Zadejte prvního hráče: ");
+                string p2 = Vstup.NactiText("Zadejte druhého hráče: ");
+                klub.AktualniTurnaj.PridejDvojici(p1, p2);
+                Console.WriteLine("Dvojice byla přidána.");
+                Console.WriteLine();
+            }
+            catch (TurnajException ex)
+            {
+                Console.WriteLine("Chyba: " + ex.Message);
+                Console.WriteLine();
+            }
         }
     }
 
@@ -290,11 +311,10 @@ public class Menu
         }
 
         int cisloZapasu = Vstup.NactiCislo("Číslo zápasu: ", 1, kolo.Zapasy.Count);
-        Console.WriteLine("Výsledek:");
         Console.WriteLine("1 - Výhra prvního (" + kolo.Zapasy[cisloZapasu - 1].Prvni.Prezdivka + ")");
         Console.WriteLine("2 - Výhra druhého (" + kolo.Zapasy[cisloZapasu - 1].Druhy.Prezdivka + ")");
         Console.WriteLine("3 - Remíza");
-        int vysledek = Vstup.NactiCislo("Zadejte volbu výsledku (1-3): ", 1, 3);
+        int vysledek = Vstup.NactiCislo("Volba (1, 2, 3): ", 1, 3);
 
         klub.AktualniTurnaj.ZadejVysledek(cisloZapasu, vysledek);
         Console.WriteLine("Výsledek byl zaznamenán.");
