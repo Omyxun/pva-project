@@ -22,24 +22,68 @@ public class Kolo
     // jen ve stavu LOSUJE_SE, hrac smi byt v kole jen jednou
     public void PridejZapas(Hrac prvni, Hrac druhy)
     {
-        throw new NotImplementedException();
+        ZkontrolujLosovani();
+
+        if (prvni == null || druhy == null)
+        {
+            throw new TurnajException("Zápas musí mít dva hráče.");
+        }
+        if (string.Equals(prvni.Prezdivka, druhy.Prezdivka, StringComparison.OrdinalIgnoreCase))
+        {
+            throw new TurnajException("Hráč nemůže hrát sám se sebou.");
+        }
+        if (ObsahujeHrace(prvni.Prezdivka) || ObsahujeHrace(druhy.Prezdivka))
+        {
+            throw new TurnajException("Hráč už je v tomto kole.");
+        }
+
+        Zapasy.Add(new Zapas(Zapasy.Count + 1, prvni, druhy));
     }
 
     // hrac nemuze mit volny los a zaroven hrat
     public void NastavVolnyLos(Hrac hrac)
     {
-        throw new NotImplementedException();
+        ZkontrolujLosovani();
+
+        if (hrac == null)
+        {
+            throw new TurnajException("Pro volný los musí být vybraný hráč.");
+        }
+        if (VolnyLos != null)
+        {
+            throw new TurnajException("V tomto kole už je volný los.");
+        }
+        if (ObsahujeHrace(hrac.Prezdivka))
+        {
+            throw new TurnajException("Hráč už je v tomto kole.");
+        }
+
+        VolnyLos = hrac;
     }
 
     // prepne stav na HRAJE_SE
     public void UkonciLosovani()
     {
-        throw new NotImplementedException();
+        ZkontrolujLosovani();
+        Stav = HRAJE_SE;
     }
 
     public bool ObsahujeHrace(string prezdivka)
     {
-        throw new NotImplementedException();
+        if (VolnyLos != null && string.Equals(VolnyLos.Prezdivka, prezdivka, StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        foreach (Zapas zapas in Zapasy)
+        {
+            if (zapas.Hraje(prezdivka))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     // jen ve stavu HRAJE_SE, vysledek jde prepsat dokud kolo neni uzavrene
@@ -52,5 +96,13 @@ public class Kolo
     public void Uzavri()
     {
         throw new NotImplementedException();
+    }
+
+    private void ZkontrolujLosovani()
+    {
+        if (Stav != LOSUJE_SE)
+        {
+            throw new TurnajException("Losování už skončilo.");
+        }
     }
 }

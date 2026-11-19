@@ -22,16 +22,22 @@ public class Zapas
     // povolene jsou jen VYHRA_PRVNIHO, VYHRA_DRUHEHO a REMIZA
     public void NastavVysledek(int vysledek)
     {
-        throw new NotImplementedException();
+        if (vysledek != VYHRA_PRVNIHO && vysledek != VYHRA_DRUHEHO && vysledek != REMIZA)
+        {
+            throw new TurnajException("Neplatný výsledek zápasu.");
+        }
+
+        Vysledek = vysledek;
     }
 
     public bool MaVysledek()
     {
-        throw new NotImplementedException();
+        return Vysledek != BEZ_VYSLEDKU;
     }
 
     public bool Hraje(string prezdivka)
     {
-        throw new NotImplementedException();
+        return string.Equals(Prvni.Prezdivka, prezdivka, StringComparison.OrdinalIgnoreCase)
+            || string.Equals(Druhy.Prezdivka, prezdivka, StringComparison.OrdinalIgnoreCase);
     }
 }
