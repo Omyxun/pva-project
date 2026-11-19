@@ -5,9 +5,11 @@ public class Kolo
     public const int HRAJE_SE = 1;
     public const int UZAVRENE = 2;
 
+    private readonly List<Zapas> zapasy;
+
     public int Cislo { get; private set; }
     public int Stav { get; private set; }
-    public List<Zapas> Zapasy { get; private set; }
+    public IReadOnlyList<Zapas> Zapasy { get; private set; }
     // null, kdyz nikdo volny los nema
     public Hrac VolnyLos { get; private set; }
 
@@ -15,7 +17,8 @@ public class Kolo
     {
         Cislo = cislo;
         Stav = LOSUJE_SE;
-        Zapasy = new List<Zapas>();
+        zapasy = new List<Zapas>();
+        Zapasy = zapasy.AsReadOnly();
         VolnyLos = null;
     }
 
@@ -37,7 +40,7 @@ public class Kolo
             throw new TurnajException("Hráč už je v tomto kole.");
         }
 
-        Zapasy.Add(new Zapas(Zapasy.Count + 1, prvni, druhy));
+        zapasy.Add(new Zapas(zapasy.Count + 1, prvni, druhy, this));
     }
 
     // hrac nemuze mit volny los a zaroven hrat
@@ -86,16 +89,51 @@ public class Kolo
         return false;
     }
 
-    // jen ve stavu HRAJE_SE, vysledek jde prepsat dokud kolo neni uzavrene
     public void ZadejVysledek(int cisloZapasu, int vysledek)
     {
-        throw new NotImplementedException();
+        foreach (Zapas zapas in zapasy)
+        {
+            if (zapas.Cislo == cisloZapasu)
+            {
+                zapas.NastavVysledek(vysledek);
+                return;
+            }
+        }
+
+        throw new TurnajException("Zápas číslo " + cisloZapasu + " v tomto kole neexistuje.");
     }
 
-    // vsechny zapasy musi mit vysledek
     public void Uzavri()
     {
-        throw new NotImplementedException();
+        ZkontrolujHru();
+
+        List<int> chybejici = new List<int>();
+        foreach (Zapas zapas in zapasy)
+        {
+            if (!zapas.MaVysledek())
+            {
+                chybejici.Add(zapas.Cislo);
+            }
+        }
+
+        if (chybejici.Count > 0)
+        {
+            throw new TurnajException("Chybí výsledek u zápasů: " + string.Join(", ", chybejici) + ".");
+        }
+
+        Stav = UZAVRENE;
+    }
+
+    internal void ZkontrolujHru()
+    {
+        if (Stav == LOSUJE_SE)
+        {
+            throw new TurnajException("Nejdřív dokončete losování.");
+        }
+        if (Stav == UZAVRENE)
+        {
+            throw new TurnajException("Kolo už je uzavřené.");
+        }
     }
 
     private void ZkontrolujLosovani()
