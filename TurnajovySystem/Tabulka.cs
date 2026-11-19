@@ -2,6 +2,7 @@ public class Tabulka
 {
     // pocita ze vsech zapasu, ktere uz maji vysledek, i v neuzavrenem kole
     // volny los dava body, ale nepocita se jako odehrany zapas
+    // serazeno podle bodu, pri shode podle prezdivky
     public static List<RadekTabulky> Spocitej(Turnaj turnaj)
     {
         List<RadekTabulky> radky = new List<RadekTabulky>();
@@ -49,6 +50,25 @@ public class Tabulka
             }
         }
 
+        // bubble sort, vic bodu je vys, pri shode podle prezdivky
+        for (int i = 0; i < radky.Count - 1; i++)
+        {
+            for (int j = 0; j < radky.Count - 1 - i; j++)
+            {
+                if (JeDriv(radky[j + 1], radky[j]))
+                {
+                    RadekTabulky pomocny = radky[j];
+                    radky[j] = radky[j + 1];
+                    radky[j + 1] = pomocny;
+                }
+            }
+        }
+
+        for (int i = 0; i < radky.Count; i++)
+        {
+            radky[i].Poradi = i + 1;
+        }
+
         return radky;
     }
 
@@ -62,5 +82,15 @@ public class Tabulka
             }
         }
         throw new TurnajException("Hráč " + hrac.Prezdivka + " není v turnaji přihlášený.");
+    }
+
+    // true, kdyz ma byt prvni radek v tabulce vys nez druhy
+    private static bool JeDriv(RadekTabulky a, RadekTabulky b)
+    {
+        if (a.Body != b.Body)
+        {
+            return a.Body > b.Body;
+        }
+        return string.Compare(a.Hrac.Prezdivka, b.Hrac.Prezdivka) < 0;
     }
 }
