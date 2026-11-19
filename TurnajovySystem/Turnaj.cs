@@ -1,9 +1,11 @@
 public class Turnaj
 {
+    private readonly List<Hrac> prihlaseni;
+
     public string Nazev { get; private set; }
     public string Disciplina { get; private set; }
     public int PocetKol { get; private set; }
-    public List<Hrac> Prihlaseni { get; private set; }
+    public IReadOnlyList<Hrac> Prihlaseni { get; private set; }
     public List<Kolo> Kola { get; private set; }
 
     public Turnaj(string nazev, string disciplina, int pocetKol)
@@ -17,29 +19,74 @@ public class Turnaj
         Nazev = nazev;
         Disciplina = disciplina;
         PocetKol = pocetKol;
-        Prihlaseni = new List<Hrac>();
+        prihlaseni = new List<Hrac>();
+        Prihlaseni = prihlaseni.AsReadOnly();
         Kola = new List<Kolo>();
     }
 
-    // jen dokud nezacalo prvni kolo
     public void Prihlas(Hrac hrac)
     {
-        throw new NotImplementedException();
+        if (Zacal())
+        {
+            throw new TurnajException("Turnaj už začal, hráče nejde přihlásit.");
+        }
+        if (hrac == null)
+        {
+            throw new TurnajException("Vyberte hráče k přihlášení.");
+        }
+
+        Validace.ZkontrolujText(hrac.Prezdivka, "Přezdívka");
+        if (JePrihlasen(hrac.Prezdivka))
+        {
+            throw new TurnajException("Hráč " + hrac.Prezdivka + " už je přihlášený.");
+        }
+
+        prihlaseni.Add(hrac);
     }
 
     public void Odhlas(string prezdivka)
     {
-        throw new NotImplementedException();
+        if (Zacal())
+        {
+            throw new TurnajException("Turnaj už začal, hráče nejde odhlásit.");
+        }
+
+        Hrac hrac = NajdiPrihlaseneho(prezdivka);
+        if (hrac == null)
+        {
+            throw new TurnajException("Hráč " + prezdivka + " není přihlášený.");
+        }
+
+        prihlaseni.Remove(hrac);
     }
 
     public bool JePrihlasen(string prezdivka)
     {
-        throw new NotImplementedException();
+        return NajdiPrihlaseneho(prezdivka) != null;
     }
 
     public bool Zacal()
     {
-        throw new NotImplementedException();
+        return Kola.Count > 0;
+    }
+
+    private Hrac NajdiPrihlaseneho(string prezdivka)
+    {
+        if (string.IsNullOrWhiteSpace(prezdivka))
+        {
+            return null;
+        }
+
+        prezdivka = prezdivka.Trim();
+        foreach (Hrac hrac in prihlaseni)
+        {
+            if (string.Equals(hrac.Prezdivka.Trim(), prezdivka, StringComparison.OrdinalIgnoreCase))
+            {
+                return hrac;
+            }
+        }
+
+        return null;
     }
 
     // posledni kolo, nebo null
