@@ -111,7 +111,7 @@ public class Menu
 
     private void ZalozTurnaj()
     {
-        if (klub.AktualniTurnaj != null)
+        if (klub.AktualniTurnaj != null && !klub.AktualniTurnaj.JeDokonceny())
         {
             Console.WriteLine("Turnaj už je založený.");
             return;
