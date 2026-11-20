@@ -10,6 +10,27 @@ public class Menu
     {
         uloziste = new Uloziste(Uloziste.VYCHOZI_SOUBOR);
         klub = new Klub();
+
+        if (uloziste.SouborExistuje())
+        {
+            try
+            {
+                klub = uloziste.Nacti();
+                Console.WriteLine("Stav byl načten ze souboru.");
+            }
+            catch (TurnajException ex)
+            {
+                Console.WriteLine("Soubor je poškozený: " + ex.Message);
+                Console.WriteLine("Program pokračuje s prázdnými daty.");
+                klub = new Klub();
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Soubor se nepodařilo načíst.");
+                Console.WriteLine("Program pokračuje s prázdnými daty.");
+                klub = new Klub();
+            }
+        }
     }
 
     public void Spust()
@@ -50,9 +71,13 @@ public class Menu
             Console.WriteLine("11 - Uzavření kola");
             Console.WriteLine("12 - Výpis kola");
             Console.WriteLine();
+            Console.WriteLine("Ostatní:");
+            Console.WriteLine("13 - Tabulka");
+            Console.WriteLine("14 - Uložit");
+            Console.WriteLine();
             Console.WriteLine("0 - Konec");
 
-            int volba = Vstup.NactiCislo("Zadejte volbu (0-12): ", 0, 12);
+            int volba = Vstup.NactiCislo("Zadejte volbu (0-14): ", 0, 14);
             Console.WriteLine();
 
             try
@@ -95,8 +120,15 @@ public class Menu
                     case 12:
                         VypsatKolo();
                         break;
+                    case 13:
+                        VypsatTabulku();
+                        break;
+                    case 14:
+                        Ulozit();
+                        break;
                     case 0:
                         bezi = false;
+                        DotazNaUlozeni();
                         Console.WriteLine("Konec programu.");
                         break;
                 }
@@ -371,6 +403,69 @@ public class Menu
         if (kolo.VolnyLos != null)
         {
             Console.WriteLine("Volný los: " + kolo.VolnyLos.Prezdivka + " (" + kolo.VolnyLos.Jmeno + ")");
+        }
+    }
+
+    private void VypsatTabulku()
+    {
+        if (klub.AktualniTurnaj == null)
+        {
+            Console.WriteLine("Turnaj není založený.");
+            return;
+        }
+
+        List<RadekTabulky> radky = Tabulka.Spocitej(klub.AktualniTurnaj);
+        if (radky.Count == 0)
+        {
+            Console.WriteLine("V turnaji nejsou žádní přihlášení hráči.");
+            return;
+        }
+
+        int maxPrezd = 10;
+        int maxJmeno = 5;
+        foreach (RadekTabulky r in radky)
+        {
+            if (r.Hrac.Prezdivka.Length > maxPrezd)
+                maxPrezd = r.Hrac.Prezdivka.Length;
+            if (r.Hrac.Jmeno.Length > maxJmeno)
+                maxJmeno = r.Hrac.Jmeno.Length;
+        }
+
+        string hlavicka = "Pořadí".PadRight(8) + "Přezdívka".PadRight(maxPrezd + 2) + "Jméno".PadRight(maxJmeno + 2) + "Body".PadRight(6) + "Zápasy";
+        Console.WriteLine(hlavicka);
+        Console.WriteLine(new string('-', hlavicka.Length));
+
+        foreach (RadekTabulky r in radky)
+        {
+            string radek = r.Poradi.ToString().PadRight(8)
+                + r.Hrac.Prezdivka.PadRight(maxPrezd + 2)
+                + r.Hrac.Jmeno.PadRight(maxJmeno + 2)
+                + r.Body.ToString().PadRight(6)
+                + r.Odehrano.ToString();
+            Console.WriteLine(radek);
+        }
+    }
+
+    private void Ulozit()
+    {
+        uloziste.Uloz(klub);
+        Console.WriteLine("Stav byl úspěšně uložen.");
+    }
+
+    private void DotazNaUlozeni()
+    {
+        bool ulozit = Vstup.NactiAnoNe("Chcete uložit před ukončením? (a/n): ");
+        if (ulozit)
+        {
+            try
+            {
+                uloziste.Uloz(klub);
+                Console.WriteLine("Stav byl uložen.");
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Uložení se nezdařilo.");
+            }
         }
     }
 
