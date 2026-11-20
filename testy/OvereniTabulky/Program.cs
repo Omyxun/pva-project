@@ -1,3 +1,4 @@
+// overeni tabulky na pripravenem turnaji
 Dictionary<string, Hrac> hraci = new Dictionary<string, Hrac>();
 Turnaj turnaj = null;
 Kolo kolo = null;
@@ -12,6 +13,7 @@ try
         throw new Exception("Neplatná hlavička testovacího souboru.");
     }
 
+    // tady nacitame jen pripravena testovaci data
     for (int i = 1; i < radky.Length; i++)
     {
         string[] pole = radky[i].Split(';');
@@ -48,6 +50,7 @@ try
     DokonciKolo(turnaj, kolo, zapasy, hraci);
 
     List<RadekTabulky> tabulka = Tabulka.Spocitej(turnaj);
+    // hodnoty z rucniho vypoctu
     string[] ocekavane =
     {
         "1 | cyril | 5 | 2",
