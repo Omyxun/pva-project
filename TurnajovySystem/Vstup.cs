@@ -8,6 +8,10 @@ public class Vstup
         {
             Console.Write(otazka);
             string vstup = Console.ReadLine();
+            if (vstup == null)
+            {
+                throw new EndOfStreamException();
+            }
 
             if (string.IsNullOrWhiteSpace(vstup))
             {
@@ -25,6 +29,10 @@ public class Vstup
         {
             Console.Write(otazka);
             string vstup = Console.ReadLine();
+            if (vstup == null)
+            {
+                throw new EndOfStreamException();
+            }
 
             if (string.IsNullOrWhiteSpace(vstup))
             {
@@ -54,6 +62,10 @@ public class Vstup
         {
             Console.Write(otazka);
             string vstup = Console.ReadLine();
+            if (vstup == null)
+            {
+                throw new EndOfStreamException();
+            }
 
             if (string.IsNullOrWhiteSpace(vstup))
             {
