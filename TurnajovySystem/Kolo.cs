@@ -1,6 +1,5 @@
 public class Kolo
 {
-    // stav kola
     public const int LOSUJE_SE = 0;
     public const int HRAJE_SE = 1;
     public const int UZAVRENE = 2;
@@ -10,7 +9,6 @@ public class Kolo
     public int Cislo { get; private set; }
     public int Stav { get; private set; }
     public IReadOnlyList<Zapas> Zapasy { get; private set; }
-    // null, kdyz nikdo volny los nema
     public Hrac VolnyLos { get; private set; }
 
     public Kolo(int cislo)
@@ -22,7 +20,6 @@ public class Kolo
         VolnyLos = null;
     }
 
-    // jen ve stavu LOSUJE_SE, hrac smi byt v kole jen jednou
     public void PridejZapas(Hrac prvni, Hrac druhy)
     {
         ZkontrolujLosovani();
@@ -43,7 +40,6 @@ public class Kolo
         zapasy.Add(new Zapas(zapasy.Count + 1, prvni, druhy, this));
     }
 
-    // hrac nemuze mit volny los a zaroven hrat
     public void NastavVolnyLos(Hrac hrac)
     {
         ZkontrolujLosovani();
@@ -64,7 +60,6 @@ public class Kolo
         VolnyLos = hrac;
     }
 
-    // prepne stav na HRAJE_SE
     public void UkonciLosovani()
     {
         ZkontrolujLosovani();

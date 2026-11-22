@@ -7,7 +7,6 @@ public class Zapas
 
     private readonly Kolo kolo;
 
-    // cislo zapasu v kole, cisluje se od 1
     public int Cislo { get; private set; }
     public Hrac Prvni { get; private set; }
     public Hrac Druhy { get; private set; }
@@ -22,7 +21,6 @@ public class Zapas
         this.kolo = kolo;
     }
 
-    // povolene jsou jen VYHRA_PRVNIHO, VYHRA_DRUHEHO a REMIZA
     public void NastavVysledek(int vysledek)
     {
         if (kolo != null)

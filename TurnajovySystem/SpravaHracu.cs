@@ -1,6 +1,5 @@
 public class SpravaHracu
 {
-    // klicem je prezdivka, diky tomu se hrac hleda rychle
     private Dictionary<string, Hrac> hraci;
 
     public SpravaHracu()
@@ -8,7 +7,6 @@ public class SpravaHracu
         hraci = new Dictionary<string, Hrac>();
     }
 
-    // prezdivka musi byt jedinecna
     public void Pridej(string jmeno, string prezdivka)
     {
         Validace.ZkontrolujText(jmeno, "Jméno");
@@ -16,7 +14,6 @@ public class SpravaHracu
         jmeno = jmeno.Trim();
         prezdivka = prezdivka.Trim();
 
-        // prezdivky se porovnavaji bez ohledu na velikost pismen
         if (hraci.ContainsKey(prezdivka.ToLower()))
         {
             throw new TurnajException("Hráč s přezdívkou " + prezdivka + " už existuje.");
@@ -24,7 +21,6 @@ public class SpravaHracu
         hraci.Add(prezdivka.ToLower(), new Hrac(jmeno, prezdivka));
     }
 
-    // kontrolu odehranych zapasu dela Klub.OdeberHrace
     public void Odeber(string prezdivka)
     {
         if (!Existuje(prezdivka))
@@ -34,7 +30,6 @@ public class SpravaHracu
         hraci.Remove(prezdivka.Trim().ToLower());
     }
 
-    // kdyz hrac neexistuje, vyhodi TurnajException
     public Hrac Najdi(string prezdivka)
     {
         if (!Existuje(prezdivka))

@@ -1,4 +1,3 @@
-// pravidla bodovani, popsana v SPECIFIKACE.md
 public class Bodovani
 {
     public const int VYHRA = 2;

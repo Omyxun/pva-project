@@ -1,8 +1,6 @@
-// drzi vsechno, co program ma: hrace klubu a otevreny turnaj
 public class Klub
 {
     public SpravaHracu Hraci { get; private set; }
-    // null, kdyz zadny turnaj neni otevreny
     public Turnaj AktualniTurnaj { get; private set; }
 
     public Klub()
@@ -11,7 +9,6 @@ public class Klub
         AktualniTurnaj = null;
     }
 
-    // otevreny muze byt jen jeden turnaj, novy jde zalozit az kdyz je stary dokonceny nebo zruseny
     public void ZalozTurnaj(string nazev, string disciplina, int pocetKol)
     {
         if (AktualniTurnaj != null && !AktualniTurnaj.JeDokonceny())
@@ -30,8 +27,6 @@ public class Klub
         AktualniTurnaj = null;
     }
 
-    // hrace, ktery uz hral nebo je prihlaseny v rozehranem turnaji, smazat nejde
-    // kdyz je prihlaseny v nezacatem turnaji, nejdriv se odhlasi
     public void OdeberHrace(string prezdivka)
     {
         Hrac hrac = Hraci.Najdi(prezdivka);
@@ -48,7 +43,6 @@ public class Klub
                 {
                     throw new TurnajException("Hráč " + hrac.Prezdivka + " je přihlášený v rozehraném turnaji, smazat ho nejde.");
                 }
-                // turnaj jeste nezacal, hrace nejdriv odhlasime
                 AktualniTurnaj.Odhlas(hrac.Prezdivka);
             }
         }
