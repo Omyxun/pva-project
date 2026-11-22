@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../TurnajovySystem/Bodovani.cs" Link="Bodovani.cs" />
+    <Compile Include="../../TurnajovySystem/Hrac.cs" Link="Hrac.cs" />
+    <Compile Include="../../TurnajovySystem/Kolo.cs" Link="Kolo.cs" />
+    <Compile Include="../../TurnajovySystem/RadekTabulky.cs" Link="RadekTabulky.cs" />
+    <Compile Include="../../TurnajovySystem/Tabulka.cs" Link="Tabulka.cs" />
+    <Compile Include="../../TurnajovySystem/Turnaj.cs" Link="Turnaj.cs" />
+    <Compile Include="../../TurnajovySystem/TurnajException.cs" Link="TurnajException.cs" />
+    <Compile Include="../../TurnajovySystem/Validace.cs" Link="Validace.cs" />
+    <Compile Include="../../TurnajovySystem/Zapas.cs" Link="Zapas.cs" />
+    <None Include="../overeni_turnaj.txt" Link="overeni_turnaj.txt" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

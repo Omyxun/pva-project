@@ -1,0 +1,21 @@
+TURNAJOVY_SYSTEM;1
+HRAC;anna;Anna Nováková
+HRAC;boris;Boris Malý
+HRAC;cyril;Cyril Dvořák
+HRAC;david;David Černý
+HRAC;eva;Eva Veselá
+TURNAJ;Ověření tabulky;Šachy;3
+PRIHLASEN;anna
+PRIHLASEN;boris
+PRIHLASEN;cyril
+PRIHLASEN;david
+PRIHLASEN;eva
+KOLO;1;2
+ZAPAS;1;anna;boris;1
+ZAPAS;2;cyril;david;3
+KOLO;2;2
+ZAPAS;1;anna;cyril;2
+ZAPAS;2;boris;eva;3
+KOLO;3;2
+ZAPAS;1;anna;eva;2
+ZAPAS;2;boris;david;1
