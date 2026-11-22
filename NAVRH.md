@@ -2,7 +2,26 @@
 
 ## Seznam tříd
 
-doplní Ondra
+| Třída | Co uchovává | Co dělá |
+| --- | --- | --- |
+| `Hrac` | Jméno a přezdívku hráče. | Představuje jednoho hráče. |
+| `SpravaHracu` | Slovník hráčů podle přezdívky. | Přidává, odebírá a vyhledává hráče. Hlídá jedinečnost přezdívek. |
+| `Klub` | Evidenci hráčů a aktuální turnaj. | Zakládá a ruší turnaj, přihlašuje hráče a kontroluje jejich odebrání. |
+| `Turnaj` | Název, disciplínu, počet kol, přihlášené hráče a kola. | Vytváří kola, kontroluje dvojice a určuje hráče s volným losem. Předává výsledky aktuálnímu kolu. |
+| `Kolo` | Číslo, stav, zápasy a případného hráče s volným losem. | Hlídá, aby byl hráč v kole nejvýš jednou. Umožňuje zadat výsledky a uzavřít kolo. |
+| `Zapas` | Číslo zápasu, oba hráče, výsledek a odkaz na kolo. | Nastavuje výsledek a kontroluje, zda ho stav kola dovoluje změnit. |
+| `Bodovani` | Konstanty pro výhru, remízu, prohru a volný los. | Drží pravidla bodování na jednom místě. |
+| `RadekTabulky` | Pořadí, hráče, body a počet odehraných zápasů. | Představuje jeden řádek výsledné tabulky. |
+| `Tabulka` | Vlastní data neuchovává. | Z výsledků vypočítá body a počty zápasů. Řádky seřadí podle bodů a potom podle přezdívky. |
+| `Uloziste` | Cestu k souboru a hlavičku formátu. | Ukládá a načítá celý stav klubu. Kontroluje soubor a při chybě načítání uvede číslo řádku. |
+| `Menu` | Klub a úložiště, se kterými program pracuje. | Zobrazuje nabídku, volá metody logiky a vypisuje výsledky i chyby. |
+| `Vstup` | Vlastní data neuchovává. | Načítá text, čísla a odpovědi ano/ne. Při chybném vstupu se zeptá znovu. |
+| `Validace` | Vlastní data neuchovává. | Kontroluje, že text není prázdný a neobsahuje středník. |
+| `TurnajException` | Zprávu o chybě. | Používá se pro chyby, které má program oznámit uživateli. |
+
+Klub má jednu evidenci hráčů a nejvýš jeden aktuální turnaj. Turnaj obsahuje kola a každé kolo obsahuje zápasy. Zápasy odkazují na hráče z evidence.
+
+Turnajová logika pracuje s daty a při chybě vyhodí `TurnajException`. Vypisování a ovládání programu řeší `Menu` a `Vstup`. Soubor `Program.cs` program spouští a zachytává konec vstupu.
 
 ## Formát ukládání
 
