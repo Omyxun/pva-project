@@ -1,4 +1,3 @@
-// ukladani a nacitani podle formatu v navrhu
 public class Uloziste
 {
     public const string VYCHOZI_SOUBOR = "turnaj.txt";
@@ -26,7 +25,6 @@ public class Uloziste
         List<string> radky = new List<string>();
         radky.Add(HLAVICKA);
 
-        // nejdriv ulozime hrace, na ktere se pak odkazuje prezdivkou
         foreach (Hrac hrac in klub.Hraci.Vsichni())
         {
             ZkontrolujText(hrac.Prezdivka);
@@ -56,7 +54,6 @@ public class Uloziste
             }
         }
 
-        // puvodni soubor nahradime az po uspesnem zapisu
         string docasnySoubor = cesta + "." + Guid.NewGuid().ToString("N") + ".tmp";
         try
         {
@@ -75,7 +72,6 @@ public class Uloziste
         {
             throw new TurnajException("Cesta k souboru není platná.");
         }
-        // po chybe zkusime uklidit docasny soubor
         finally
         {
             try
@@ -122,7 +118,6 @@ public class Uloziste
             throw new TurnajException("Cesta k souboru není platná.");
         }
 
-        // novy klub vratime az po nacteni celeho souboru
         Klub klub = new Klub();
         Turnaj turnaj = null;
         Kolo kolo = null;
@@ -178,7 +173,6 @@ public class Uloziste
                         if (kolo != null)
                         {
                             cisloRadku = radekKola;
-                            // pred dalsim kolem obnovime stav predchoziho
                             ObnovStavKola(turnaj, stavKola, vysledky);
                             cisloRadku = i + 1;
                         }
@@ -226,7 +220,6 @@ public class Uloziste
                         }
 
                         turnaj.PridejDvojici(pole[2], pole[3]);
-                        // vysledky zadame az po dokonceni losovani
                         vysledky.Add(vysledek);
                         break;
 
@@ -256,7 +249,6 @@ public class Uloziste
             return;
         }
 
-        // pri dokonceni losovani se znovu urci volny los
         turnaj.DokonciLosovani();
         for (int i = 0; i < vysledky.Count; i++)
         {
